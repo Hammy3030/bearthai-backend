@@ -87,7 +87,7 @@ const getCorsOrigins = () => {
   if (process.env.NODE_ENV === 'production') {
     return getFrontendUrl();
   }
-  
+
   // Development: allow multiple common localhost ports
   return [
     'http://localhost:5173',
@@ -203,3 +203,6 @@ if (!isProduction) {
 // Export app for Vercel and development
 export default app;
 export { io };
+app.get('/', (req, res) => {
+  res.send('Backend is working!');
+});
