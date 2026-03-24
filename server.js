@@ -210,8 +210,9 @@ app.get('/', (req, res) => {
 
 app.use(cors({
   origin: [
-    'http://localhost:5173',  // สำหรับการพัฒนาในเครื่องท้องถิ่น
+    'http://localhost:5173', // สำหรับการพัฒนาในเครื่องท้องถิ่น
     'https://bearthai-frontend-79qc1vsyw-patcharapong-phunsapamorns-projects.vercel.app', // สำหรับ **Frontend** บน Vercel
+    'https://bearthai-frontend-9xqv6zeh6-patcharapong-phunsapamorns-projects.vercel.app', // อีก URL ของ **Frontend**
   ],
   credentials: true, // อนุญาตให้ส่ง cookies หรือข้อมูลที่ต้องการความปลอดภัย
 }));
