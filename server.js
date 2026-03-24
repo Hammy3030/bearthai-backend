@@ -206,3 +206,8 @@ export { io };
 app.get('/', (req, res) => {
   res.send('Backend is working!');
 });
+
+app.use(cors({
+  origin: 'https://bearthai-frontend-79qc1vsyw-patcharapong-phunsapamorns-projects.vercel.app', // ตั้งค่า URL ของ **Frontend**
+  credentials: true,
+}));
