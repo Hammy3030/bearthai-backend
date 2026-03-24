@@ -119,7 +119,10 @@ app.get('/health', (req, res) => {
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   app.use('/uploads', express.static('public/uploads'));
 }
-
+app.post('/api/auth/login', (req, res) => {
+  // ตรวจสอบการเข้าสู่ระบบ หรือโค้ดที่เกี่ยวข้อง
+  res.send('Login API');
+});
 // Database connection middleware (Critical for Vercel/Serverless) - หลัง /health
 app.use(async (req, res, next) => {
   try {
@@ -210,9 +213,8 @@ app.get('/', (req, res) => {
 
 app.use(cors({
   origin: [
-    'http://localhost:5173', // สำหรับการพัฒนาในเครื่องท้องถิ่น
+    'http://localhost:5173',  // สำหรับการพัฒนาในเครื่องท้องถิ่น
     'https://bearthai-frontend-79qc1vsyw-patcharapong-phunsapamorns-projects.vercel.app', // สำหรับ **Frontend** บน Vercel
-    'https://bearthai-frontend-9xqv6zeh6-patcharapong-phunsapamorns-projects.vercel.app', // อีก URL ของ **Frontend**
   ],
   credentials: true, // อนุญาตให้ส่ง cookies หรือข้อมูลที่ต้องการความปลอดภัย
 }));
