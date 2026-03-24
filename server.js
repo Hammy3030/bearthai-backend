@@ -172,6 +172,7 @@ if (!isProduction) {
   });
 }
 
+
 // Start local development server (not for Vercel)
 if (!isProduction) {
   const PORT = process.env.PORT || 3000;
@@ -208,6 +209,9 @@ app.get('/', (req, res) => {
 });
 
 app.use(cors({
-  origin: '*', // อนุญาตให้ทุกโดเมนเชื่อมต่อได้
-  credentials: true,
+  origin: [
+    'http://localhost:5173',  // สำหรับการพัฒนาในเครื่องท้องถิ่น
+    'https://bearthai-frontend-79qc1vsyw-patcharapong-phunsapamorns-projects.vercel.app', // สำหรับ **Frontend** บน Vercel
+  ],
+  credentials: true, // อนุญาตให้ส่ง cookies หรือข้อมูลที่ต้องการความปลอดภัย
 }));
