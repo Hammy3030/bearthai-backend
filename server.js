@@ -211,10 +211,3 @@ app.get('/', (req, res) => {
   res.send('Backend is working!');
 });
 
-app.use(cors({
-  origin: [
-    'http://localhost:5173',  // สำหรับการพัฒนาในเครื่องท้องถิ่น
-    'https://bearthai-frontend-79qc1vsyw-patcharapong-phunsapamorns-projects.vercel.app', // สำหรับ **Frontend** บน Vercel
-  ],
-  credentials: true, // อนุญาตให้ส่ง cookies หรือข้อมูลที่ต้องการความปลอดภัย
-}));
