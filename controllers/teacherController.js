@@ -136,7 +136,24 @@ export class TeacherController {
 
       const createdStudents = await ClassroomService.addStudentsToClassroom(req.classroomId, students);
 
+      // Generate QR codes for all students
+      const studentsWithQR = await Promise.all(
+        createdStudents.map(async (student) => {
+          const qrCodeImage = await QRCode.toDataURL(student.qrCode, {
+            width: 200,
+            margin: 2,
+            color: {
+              dark: '#000000',
+              light: '#FFFFFF'
+            }
+          });
 
+          return {
+            ...student,
+            qrCodeImage
+          };
+        })
+      );
 
       res.status(201).json({
         success: true,
@@ -167,7 +184,24 @@ export class TeacherController {
         createdStudents = await ClassroomService.createStudentsWithoutClassroom(teacherId, students);
       }
 
+      // Generate QR codes for all students
+      const studentsWithQR = await Promise.all(
+        createdStudents.map(async (student) => {
+          const qrCodeImage = await QRCode.toDataURL(student.qrCode, {
+            width: 200,
+            margin: 2,
+            color: {
+              dark: '#000000',
+              light: '#FFFFFF'
+            }
+          });
 
+          return {
+            ...student,
+            qrCodeImage
+          };
+        })
+      );
 
       res.status(201).json({
         success: true,
@@ -731,9 +765,44 @@ export class TeacherController {
       let totalCreated = 0;
       let totalSkipped = 0;
 
-      
+      // Generate lessons for each classroom
+      for (const classroom of classrooms) {
+        try {
+          // Check if lessons already exist (same check as generateDefaultLessons)
+          const existingLessons = await Lesson.find({
+            classroomId: classroom._id,
+            teacherId: teacherObjectId
+          });
 
-      
+          console.log(`Checking classroom: ${classroom.name} (${classroom._id}), existing lessons: ${existingLessons.length}, teacherId: ${teacherObjectId}`);
+
+          if (existingLessons.length === 0) {
+            // No lessons exist, create default lessons
+            console.log(`Creating lessons for classroom: ${classroom.name}...`);
+            const createdLessons = await LessonService.generateDefaultLessons(classroom._id, teacherObjectId);
+            console.log(`✅ Created ${createdLessons?.length || 0} lessons for classroom: ${classroom.name}`);
+            totalCreated++;
+          } else {
+            // Lessons already exist, skip
+            console.log(`⏭️  Skipped classroom: ${classroom.name} (already has ${existingLessons.length} lessons)`);
+            totalSkipped++;
+          }
+        } catch (error) {
+          console.error(`❌ Error processing classroom ${classroom.name}:`, error);
+          console.error('Error details:', error.message, error.stack);
+          // Continue with next classroom
+        }
+      }
+
+      res.json({
+        success: true,
+        message: `สร้างบทเรียนอัตโนมัติให้ทุกห้องเรียนสำเร็จ (สร้างใหม่: ${totalCreated} ห้อง, ข้าม: ${totalSkipped} ห้อง)`,
+        data: {
+          totalClassrooms: classrooms.length,
+          created: totalCreated,
+          skipped: totalSkipped
+        }
+      });
     } catch (error) {
       console.error('Generate lessons for all classrooms error:', error);
       res.status(500).json({

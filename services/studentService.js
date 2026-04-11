@@ -252,8 +252,8 @@ export class StudentService {
       // Create notification for lesson completion
       await DatabaseService.createNotification({
         student_id: studentId,
-        title: `เรียนจบบทเรียนแล้ว!`,
-        message: `คุณเรียนจบ "${lesson.title}" แล้ว! ทำแบบทดสอบหลังเรียนเพื่อทดสอบความรู้ของคุณ`,
+        title: `🎯 เรียนจบบทเรียนแล้ว`,
+        message: `คุณเรียนจบ "${lesson.title}" แล้ว ทำแบบทดสอบหลังเรียนเพื่อทดสอบความรู้ของคุณ`,
         type: 'SUCCESS'
       });
 
@@ -299,8 +299,8 @@ export class StudentService {
     if (!preTest) {
       return {
         hasPreTest: false,
-        isPreTestCompleted: true, // No pre-test required
-        canAccessLesson: true
+        isPreTestCompleted: false, // ยังไม่ทำ ก็คือยังไม่เสร็จ
+        canAccessLesson: false    // เข้าเรียนไม่ได้ จนกว่าครูจะสร้างข้อสอบให้ตรง ID
       };
     }
 
@@ -336,56 +336,14 @@ export class StudentService {
       });
     }
 
-    // Strategy 4: Try finding any attempt for this student and test (most permissive)
-    if (!testAttempt) {
-      const allAttempts = await TestAttempt.find({
-        testId: testObjectId
-      });
 
-      console.log('getPreTestStatus - Found all attempts for test:', {
-        testId: testObjectId.toString(),
-        totalAttempts: allAttempts.length,
-        attempts: allAttempts.map(a => ({
-          id: a._id.toString(),
-          studentId: a.studentId.toString(),
-          testId: a.testId.toString(),
-          completedAt: a.completedAt
-        }))
-      });
 
-      // Find matching studentId by comparing string representations
-      testAttempt = allAttempts.find(attempt =>
-        attempt.studentId.toString() === studentId.toString() ||
-        attempt.studentId.toString() === studentObjectId.toString()
-      );
-
-      if (testAttempt) {
-        console.log('getPreTestStatus - Found matching attempt via Strategy 4');
-      }
-    }
-
-    console.log('getPreTestStatus - Debug:', {
-      studentId: studentId?.toString(),
-      studentObjectId: studentObjectId?.toString(),
-      studentObjectIdType: studentObjectId instanceof mongoose.Types.ObjectId ? 'ObjectId' : typeof studentObjectId,
-      lessonId: lessonId?.toString(),
-      lessonObjectId: lessonObjectId?.toString(),
-      preTestId: preTest._id?.toString(),
-      testObjectId: testObjectId?.toString(),
-      testAttemptFound: !!testAttempt,
-      testAttemptId: testAttempt?._id?.toString(),
-      testAttemptStudentId: testAttempt?.studentId?.toString(),
-      testAttemptStudentIdType: testAttempt?.studentId instanceof mongoose.Types.ObjectId ? 'ObjectId' : typeof testAttempt?.studentId,
-      testAttemptTestId: testAttempt?.testId?.toString(),
-      testAttemptTestIdType: testAttempt?.testId instanceof mongoose.Types.ObjectId ? 'ObjectId' : typeof testAttempt?.testId
-    });
-
-    const isPreTestCompleted = testAttempt !== null;
+    const isPreTestCompleted = !!testAttempt;
 
     return {
       hasPreTest: true,
-      isPreTestCompleted,
-      canAccessLesson: isPreTestCompleted,
+      isPreTestCompleted: isPreTestCompleted,
+      canAccessLesson: isPreTestCompleted, // ต้องทำเสร็จก่อน (true) ถึงจะเข้าเรียนได้
       preTestId: preTest._id.toString(),
       preTestTitle: preTest.title
     };
@@ -749,7 +707,7 @@ export class StudentService {
       // Create notification for passing test
       await DatabaseService.createNotification({
         student_id: studentId,
-        title: `🎉คุณผ่านแบบทดสอบแล้ว`,
+        title: `🎉 ยินดีด้วย คุณผ่านแบบทดสอบแล้ว`,
         message: `คุณทำคะแนนได้ ${score}% ในแบบทดสอบ "${test.title}"`,
         type: 'SUCCESS'
       });
@@ -763,7 +721,7 @@ export class StudentService {
       if (stars > 0) {
         await DatabaseService.createNotification({
           student_id: studentId,
-          title: `⭐ ได้รับ ${stars} ดาว!`,
+          title: `⭐ ได้รับ ${stars} ดาว`,
           message: `คุณได้รับ ${stars} ดาวจากแบบทดสอบ "${test.title}"`,
           type: 'SUCCESS'
         });
@@ -772,7 +730,7 @@ export class StudentService {
       // Notify student that they need to retry posttest
       await DatabaseService.createNotification({
         student_id: studentId,
-        title: ` ยังไม่ผ่านแบบทดสอบหลังเรียน`,
+        title: `💪 ยังไม่ผ่านแบบทดสอบหลังเรียน`,
         message: `คุณทำคะแนนได้ ${score}% แต่ต้องได้ ${test.passingScore}% ขึ้นไป กรุณาทำใหม่อีกครั้ง`,
         type: 'WARNING'
       });
@@ -858,15 +816,15 @@ export class StudentService {
       if (gameData.score === 100) {
         await DatabaseService.createNotification({
           student_id: studentId,
-          title: `🥇 ได้เหรียญทอง!`,
-          message: `คุณเล่นเกม "${game.title}" ได้คะแนน 100%!`,
+          title: `🥇 ได้เหรียญทอง`,
+          message: `คุณเล่นเกม "${game.title}" ได้คะแนน 100%`,
           type: 'SUCCESS'
         });
       } else if (isPassed) {
         // Create notification for completing game
         await DatabaseService.createNotification({
           student_id: studentId,
-          title: `🎮 ผ่านเกมแล้ว!`,
+          title: `🎮 ผ่านเกมแล้ว`,
           message: `คุณเล่นเกม "${game.title}" ได้คะแนน ${gameData.score}%`,
           type: 'SUCCESS'
         });

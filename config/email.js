@@ -6,10 +6,10 @@ export const EMAIL_CONFIG = {
   port: Number.parseInt(process.env.SMTP_PORT) || 587,
   secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
   auth: {
-    user: process.env.SMTP_USER || 'satanakorn6.codercamp@gmail.com',
-    pass: process.env.SMTP_PASS || 'obslyjyavjwwoxyx'
+    user: process.env.SMTP_USER || 'patcharapongham@gmail.com',
+    pass: process.env.SMTP_PASS || 'snqxgbaaqozctbxq'
   },
-  from: process.env.SMTP_FROM || process.env.SMTP_USER || 'satanakorn6.codercamp@gmail.com',
+  from: process.env.SMTP_FROM || process.env.SMTP_USER || 'patcharapongham@gmail.com',
   appName: process.env.APP_NAME || 'BearThai',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173'
 };

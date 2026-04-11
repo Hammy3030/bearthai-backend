@@ -136,11 +136,11 @@ export class AudioService {
      */
     static getEncouragingSound(type) {
         const sounds = {
-            correct: '🎉 เก่งมาก!',
-            incorrect: '💪 ลองใหม่นะ!',
-            complete: '🌟 ยอดเยี่ยม! เรียนจบแล้ว!',
-            try_again: '😊 อีกนิดเดียว!',
-            good_job: '👏 ทำได้ดีมาก!'
+            correct: '🎉 เก่งมาก',
+            incorrect: '💪 ลองใหม่นะ',
+            complete: '🌟 ยอดเยี่ยม เรียนจบแล้ว',
+            try_again: '😊 อีกนิดเดียว',
+            good_job: '👏 ทำได้ดีมาก'
         };
 
         return sounds[type] || sounds.good_job;
